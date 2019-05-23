@@ -18,6 +18,8 @@ For cell comparison function (only for same series cells):
 * Show cell internal_power table comparison on same conditon.
 
 Notice:
-anaconda 3-5.2.0 is the suggested python version, It has included 
-all of the needed python libraries.
-matlibplot 2.2.2 or higher version is required.
+1. anaconda 3-5.2.0 is the suggested python version, It has included 
+   all of the needed python libraries.
+2. matlibplot 2.2.2 or higher version is required.
+3. liberty parser "libertyParser.py" is required, you can get it
+   from https://github.com/liyanqing1987/libertyParser.

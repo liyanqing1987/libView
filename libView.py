@@ -14,10 +14,8 @@
 import os
 import re
 import sys
-import stat
 import copy
 import numpy
-import getpass
 import collections
 
 # For PyQt5 gui.
@@ -868,38 +866,56 @@ class mainWindow(QMainWindow):
             for key in libPinDic['cell'][cellName]:
                 if key == 'bundle':
                     for bundleName in libPinDic['cell'][cellName]['bundle']:
-                        for pinName in libPinDic['cell'][cellName]['bundle'][bundleName]['pin']:
-                            if 'timing' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]:
-                                (tmpTimingDicList, tmpPinTimingDic) = self.getPinTimingInfo(libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]['timing'])
-                                self.specifiedLibDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName].setdefault('pin', collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName]['pin'].setdefault(pinName, collections.OrderedDict())
-                                if tmpTimingDicList:
-                                    self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName]['pin'][pinName].setdefault('timing', tmpTimingDicList)
-                                self.timingTabDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
-                                self.timingTabDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
-                                self.timingTabDic[libraryFileName][cellName]['bundle'][bundleName].setdefault('pin', collections.OrderedDict())
-                                self.timingTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'].setdefault(pinName, collections.OrderedDict())
-                                if tmpPinTimingDic:
-                                    self.timingTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'][pinName].setdefault('timing', tmpPinTimingDic)
+                        bundleTimingDicList = []
+                        if 'timing' in libPinDic['cell'][cellName]['bundle'][bundleName]:
+                            bundleTimingDicList = libPinDic['cell'][cellName]['bundle'][bundleName]['timing']
+                        if 'pin' in libPinDic['cell'][cellName]['bundle'][bundleName]:
+                            for pinName in libPinDic['cell'][cellName]['bundle'][bundleName]['pin']:
+                                if ('timing' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]) or (len(bundleTimingDicList) > 0):
+                                    libPinTimingDicList = []
+                                    if 'timing' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]:
+                                        libPinTimingDicList = libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]['timing']
+                                    if len(bundleTimingDicList) > 0:
+                                        libPinTimingDicList.extend(bundleTimingDicList)
+                                    (tmpTimingDicList, tmpPinTimingDic) = self.getPinTimingInfo(libPinTimingDicList)
+                                    self.specifiedLibDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName].setdefault('pin', collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName]['pin'].setdefault(pinName, collections.OrderedDict())
+                                    if tmpTimingDicList:
+                                        self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName]['pin'][pinName].setdefault('timing', tmpTimingDicList)
+                                    self.timingTabDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
+                                    self.timingTabDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
+                                    self.timingTabDic[libraryFileName][cellName]['bundle'][bundleName].setdefault('pin', collections.OrderedDict())
+                                    self.timingTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'].setdefault(pinName, collections.OrderedDict())
+                                    if tmpPinTimingDic:
+                                        self.timingTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'][pinName].setdefault('timing', tmpPinTimingDic)
                 elif key == 'bus':
                     for busName in libPinDic['cell'][cellName]['bus']:
-                        for pinName in libPinDic['cell'][cellName]['bus'][busName]['pin']:
-                            if 'timing' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]:
-                                (tmpTimingDicList, tmpPinTimingDic) = self.getPinTimingInfo(libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]['timing'])
-                                self.specifiedLibDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
-                                if tmpTimingDicList:
-                                    self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('timing', tmpTimingDicList)
-                                self.timingTabDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
-                                self.timingTabDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
-                                self.timingTabDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
-                                self.timingTabDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
-                                if tmpPinTimingDic:
-                                    self.timingTabDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('timing', tmpPinTimingDic)
+                        busTimingDicList = []
+                        if 'timing' in libPinDic['cell'][cellName]['bus'][busName]:
+                            busTimingDicList = libPinDic['cell'][cellName]['bus'][busName]['timing']
+                        if 'pin' in libPinDic['cell'][cellName]['bus'][busName]:
+                            for pinName in libPinDic['cell'][cellName]['bus'][busName]['pin']:
+                                if ('timing' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]) or (len(busTimingDicList) > 0):
+                                    libPinTimingDicList = []
+                                    if 'timing' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]:
+                                        libPinTimingDicList = libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]['timing']
+                                    if len(busTimingDicList) > 0:
+                                        libPinTimingDicList.extend(busTimingDicList)
+                                    (tmpTimingDicList, tmpPinTimingDic) = self.getPinTimingInfo(libPinTimingDicList)
+                                    self.specifiedLibDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
+                                    if tmpTimingDicList:
+                                        self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('timing', tmpTimingDicList)
+                                    self.timingTabDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
+                                    self.timingTabDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
+                                    self.timingTabDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
+                                    self.timingTabDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
+                                    if tmpPinTimingDic:
+                                        self.timingTabDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('timing', tmpPinTimingDic)
                 elif key == 'pin':
                     for pinName in libPinDic['cell'][cellName]['pin']:
                         if 'timing' in libPinDic['cell'][cellName]['pin'][pinName]:
@@ -997,38 +1013,56 @@ class mainWindow(QMainWindow):
             for key in libPinDic['cell'][cellName]:
                 if key == 'bundle':
                     for bundleName in libPinDic['cell'][cellName]['bundle']:
-                        for pinName in libPinDic['cell'][cellName]['bundle'][bundleName]['pin']:
-                            if 'internal_power' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]:
-                                (tmpInternalPowerDicList, tmpPinInternalPowerDic) = self.getPinInternalPowerInfo(libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]['internal_power'])
-                                self.specifiedLibDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName].setdefault('pin', collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName]['pin'].setdefault(pinName, collections.OrderedDict())
-                                if tmpInternalPowerDicList:
-                                    self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName]['pin'][pinName].setdefault('internal_power', tmpInternalPowerDicList)
-                                self.internalPowerTabDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
-                                self.internalPowerTabDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
-                                self.internalPowerTabDic[libraryFileName][cellName]['bundle'][bundleName].setdefault('pin', collections.OrderedDict())
-                                self.internalPowerTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'].setdefault(pinName, collections.OrderedDict())
-                                if tmpPinInternalPowerDic:
-                                    self.internalPowerTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'][pinName].setdefault('internal_power', tmpPinInternalPowerDic)
+                        bundleInternalPowerDicList = []
+                        if 'internal_power' in libPinDic['cell'][cellName]['bundle'][bundleName]:
+                            bundleInternalPowerDicList = libPinDic['cell'][cellName]['bundle'][bundleName]['internal_power']
+                        if 'pin' in libPinDic['cell'][cellName]['bundle'][bundleName]:
+                            for pinName in libPinDic['cell'][cellName]['bundle'][bundleName]['pin']:
+                                if ('internal_power' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]) or (len(bundleInternalPowerDicList) > 0):
+                                    libPinInternalPowerDicList = []
+                                    if 'internal_power' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]:
+                                        libPinInternalPowerDicList = libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]['internal_power']
+                                    if len(bundleInternalPowerDicList) > 0:
+                                        libPinInternalPowerDicList.extend(bundleInternalPowerDicList)
+                                    (tmpInternalPowerDicList, tmpPinInternalPowerDic) = self.getPinInternalPowerInfo(libPinInternalPowerDicList)
+                                    self.specifiedLibDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName].setdefault('pin', collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName]['pin'].setdefault(pinName, collections.OrderedDict())
+                                    if tmpInternalPowerDicList:
+                                        self.specifiedLibDic[libraryFileName][cellName]['bundle'][bundleName]['pin'][pinName].setdefault('internal_power', tmpInternalPowerDicList)
+                                    self.internalPowerTabDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
+                                    self.internalPowerTabDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
+                                    self.internalPowerTabDic[libraryFileName][cellName]['bundle'][bundleName].setdefault('pin', collections.OrderedDict())
+                                    self.internalPowerTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'].setdefault(pinName, collections.OrderedDict())
+                                    if tmpPinInternalPowerDic:
+                                        self.internalPowerTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'][pinName].setdefault('internal_power', tmpPinInternalPowerDic)
                 elif key == 'bus':
                     for busName in libPinDic['cell'][cellName]['bus']:
-                        for pinName in libPinDic['cell'][cellName]['bus'][busName]['pin']:
-                            if 'internal_power' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]:
-                                (tmpInternalPowerDicList, tmpPinInternalPowerDic) = self.getPinInternalPowerInfo(libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]['internal_power'])
-                                self.specifiedLibDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
-                                self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
-                                if tmpInternalPowerDicList:
-                                    self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('internal_power', tmpInternalPowerDicList)
-                                self.internalPowerTabDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
-                                self.internalPowerTabDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
-                                self.internalPowerTabDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
-                                self.internalPowerTabDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
-                                if tmpPinInternalPowerDic:
-                                    self.internalPowerTabDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('internal_power', tmpPinInternalPowerDic)
+                        busInternalPowerDicList = []
+                        if 'internal_power' in libPinDic['cell'][cellName]['bus'][busName]:
+                            busInternalPowerDicList = libPinDic['cell'][cellName]['bus'][busName]['internal_power']
+                        if 'pin' in libPinDic['cell'][cellName]['bus'][busName]:
+                            for pinName in libPinDic['cell'][cellName]['bus'][busName]['pin']:
+                                if ('internal_power' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]) or (len(busInternalPowerDicList) > 0):
+                                    libPinInternalPowerDicList = []
+                                    if 'internal_power' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]:
+                                        libPinInternalPowerDicList = libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]['internal_power']
+                                    if len(busInternalPowerDicList) > 0:
+                                        libPinInternalPowerDicList.extend(busInternalPowerDicList)
+                                    (tmpInternalPowerDicList, tmpPinInternalPowerDic) = self.getPinInternalPowerInfo(libPinInternalPowerDicList)
+                                    self.specifiedLibDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
+                                    self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
+                                    if tmpInternalPowerDicList:
+                                        self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('internal_power', tmpInternalPowerDicList)
+                                    self.internalPowerTabDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
+                                    self.internalPowerTabDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
+                                    self.internalPowerTabDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
+                                    self.internalPowerTabDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
+                                    if tmpPinInternalPowerDic:
+                                        self.internalPowerTabDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('internal_power', tmpPinInternalPowerDic)
                 elif key == 'pin':
                     for pinName in libPinDic['cell'][cellName]['pin']:
                         if 'internal_power' in libPinDic['cell'][cellName]['pin'][pinName]:
