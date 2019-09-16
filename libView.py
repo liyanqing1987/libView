@@ -16,6 +16,7 @@ import re
 import sys
 import copy
 import numpy
+import argparse
 import collections
 
 # For PyQt5 gui.
@@ -35,6 +36,26 @@ from mpl_toolkits.mplot3d import axes3d
 import libertyParser
 
 os.environ["PYTHONUNBUFFERED"]="1"
+
+def readArgs():
+    """
+    Read in arguments.
+    """
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-i', '--input',
+                        nargs='+',
+                        default=[],
+                        help='Generate init configure file.')
+
+    args = parser.parse_args()
+
+    for inputFile in args.input:
+        if not os.path.exists(inputFile):
+            print('*Error*: ' + str(inputFile) + ': No such file.')
+            sys.exit(1)
+
+    return(args.input)
 
 class pyplotFigure(FigureCanvasQTAgg):
     """
@@ -136,10 +157,13 @@ class mainWindow(QMainWindow):
     """
     GUI.
     """
-    def __init__(self):
+    def __init__(self, inputFileList):
         super().__init__()
         self.initVars()
         self.initUI()
+
+        for inputFile in inputFileList:
+            self.loadLibFile(inputFile)
 
     def initVars(self):
         self.libDic = collections.OrderedDict()
@@ -214,11 +238,12 @@ class mainWindow(QMainWindow):
         fileMenu.addAction(loadAction)
         fileMenu.addAction(exitAction)
 
-    def loadLibFile(self):
+    def loadLibFile(self, libraryFile=''):
         """
         Load library file.
         """
-        (libraryFile, fileType) = QFileDialog.getOpenFileName(self, 'Load library file', '.', "Library Files (*.lib)")
+        if libraryFile == '':
+            (libraryFile, fileType) = QFileDialog.getOpenFileName(self, 'Load library file', '.', "Library Files (*.lib)")
 
         if libraryFile:
             print('Loading library file "' + str(libraryFile) + '" ...')
@@ -2308,8 +2333,9 @@ class mainWindow(QMainWindow):
 # Main Process #
 ################
 def main():
+    inputFileList = readArgs()
     app = QApplication(sys.argv)
-    mw = mainWindow()
+    mw = mainWindow(inputFileList)
     mw.show()
     sys.exit(app.exec_())
 
