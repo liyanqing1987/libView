@@ -20,7 +20,7 @@ import argparse
 import collections
 
 # For PyQt5 gui.
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp, QFrame, QGridLayout, QFileDialog, QSplitter, QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QLabel, QLineEdit, QTabWidget, QWidget, QTableWidget, QTableWidgetItem, QComboBox, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp, QFrame, QGridLayout, QFileDialog, QSplitter, QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QLabel, QLineEdit, QTabWidget, QWidget, QTableWidget, QTableWidgetItem, QComboBox, QDesktopWidget, QPushButton
 from PyQt5.QtGui import QBrush
 from PyQt5.QtCore import Qt
 
@@ -197,11 +197,11 @@ class mainWindow(QMainWindow):
         Main process, draw the main graphic.
         """
         # main window. 
-        self.cellListTree = QTreeWidget(self)
+        self.cellListFrame = QFrame(self)
         self.mainFrame = QFrame(self)
 
         self.mainSplitter = QSplitter(Qt.Horizontal)
-        self.mainSplitter.addWidget(self.cellListTree)
+        self.mainSplitter.addWidget(self.cellListFrame)
         self.mainSplitter.addWidget(self.mainFrame)
         self.setCentralWidget(self.mainSplitter)
 
@@ -286,18 +286,41 @@ class mainWindow(QMainWindow):
 #### Init Gui (begin) ####
     def initGui(self):
         """
-        Init Gui, init self.cellListTree and self.mainFrame.
+        Init Gui, init self.cellListFrame and self.mainFrame.
         """
-        self.initCellListTree()
+        self.initCellListFrame()
         self.initMainFrame()
 
-    def initCellListTree(self):
+    def initCellListFrame(self):
         """
         Init liberty-cell information on left sideBar.
         """
+        # self.cellListFrame
+        self.cellListFrame.setFrameShadow(QFrame.Raised)
+        self.cellListFrame.setFrameShape(QFrame.Box)
+
+        self.cellSelectLine = QLineEdit()
+        cellSelectButton = QPushButton('Select', self.cellListFrame)
+        cellSelectButton.clicked.connect(self.selectCell)
+
+        self.cellListTree = QTreeWidget(self.cellListFrame)
         self.cellListTree.setColumnCount(1)
         self.cellListTree.setHeaderLabel('Lib->Cell')
         self.cellListTree.clicked.connect(self.cellListBeClicked)
+
+        # self.cellListFrame - Grid
+        cellListFrameGrid = QGridLayout()
+
+        cellListFrameGrid.addWidget(self.cellSelectLine, 0, 0)
+        cellListFrameGrid.addWidget(cellSelectButton, 0, 1)
+        cellListFrameGrid.addWidget(self.cellListTree, 1, 0, 1, 2)
+
+        cellListFrameGrid.setRowStretch(0, 1)
+        cellListFrameGrid.setRowStretch(1, 20)
+        cellListFrameGrid.setColumnStretch(0, 10)
+        cellListFrameGrid.setColumnStretch(1, 1)
+
+        self.cellListFrame.setLayout(cellListFrameGrid)
 
     def initMainFrame(self):
         """
@@ -1100,6 +1123,33 @@ class mainWindow(QMainWindow):
                             self.internalPowerTabDic[libraryFileName][cellName]['pin'].setdefault(pinName, collections.OrderedDict())
                             if tmpPinInternalPowerDic:
                                 self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName].setdefault('internal_power', tmpPinInternalPowerDic)
+
+    def selectCell(self):
+        """
+        Select specified cells.
+        """
+        cellSelectString = self.cellSelectLine.text().strip()
+        selectedCellList = cellSelectString.split()
+
+        for i in range(len(selectedCellList)):
+            if re.search('\*', selectedCellList[i]):
+                selectedCellList[i] = re.sub('\*', '.*', selectedCellList[i])
+
+        item = QTreeWidgetItemIterator(self.cellListTree)
+
+        while item.value():
+            if item.value().parent():
+                if item.value().checkState(0) == Qt.Checked:
+                    item.value().setCheckState(0, Qt.Unchecked)
+                cellName = item.value().text(0)
+                for selectedCell in selectedCellList:
+                    if re.match('^' + str(selectedCell) + '$', cellName):
+                        item.value().setCheckState(0, Qt.Checked)
+                        break
+
+            item += 1
+
+        self.cellListBeClicked()
 
     def cellListBeClicked(self):
         """
