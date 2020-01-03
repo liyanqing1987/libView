@@ -229,7 +229,7 @@ class mainWindow(QMainWindow):
 
         # File
         loadAction = QAction('Load', self)
-        loadAction.triggered.connect(self.loadLibFile)
+        loadAction.triggered.connect(lambda:self.loadLibFile())
 
         exitAction = QAction('Quit', self)
         exitAction.triggered.connect(qApp.quit)
@@ -238,11 +238,11 @@ class mainWindow(QMainWindow):
         fileMenu.addAction(loadAction)
         fileMenu.addAction(exitAction)
 
-    def loadLibFile(self, libraryFile=None):
+    def loadLibFile(self, libraryFile=''):
         """
         Load library file.
         """
-        if not libraryFile:
+        if libraryFile == '':
             (libraryFile, fileType) = QFileDialog.getOpenFileName(self, 'Load library file', '.', "Library Files (*.lib)")
 
         if libraryFile:
@@ -279,7 +279,7 @@ class mainWindow(QMainWindow):
                     elif self.timingUnit != timingUnit:
                         print('*Warning*: time_unit is "' + str(timingUnit) + '" on library file "' + str(libraryFile) + '", it is different with original library file, will ignore it.')
 
-        self.updateCellListTree()
+            self.updateCellListTree()
 #### For Menu Bar (end) ####
 
 
