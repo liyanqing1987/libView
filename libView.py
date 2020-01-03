@@ -238,11 +238,11 @@ class mainWindow(QMainWindow):
         fileMenu.addAction(loadAction)
         fileMenu.addAction(exitAction)
 
-    def loadLibFile(self, libraryFile=''):
+    def loadLibFile(self, libraryFile=None):
         """
         Load library file.
         """
-        if libraryFile == '':
+        if not libraryFile:
             (libraryFile, fileType) = QFileDialog.getOpenFileName(self, 'Load library file', '.', "Library Files (*.lib)")
 
         if libraryFile:
