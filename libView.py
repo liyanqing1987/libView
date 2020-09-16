@@ -1942,10 +1942,10 @@ class mainWindow(QMainWindow):
                     self.timingTabFigure.draw3DPlot(self.timingTabFigureXArray, self.timingTabFigureYArray, self.timingTabFigureZArray, xLabel='index_1', yLabel='index_2', zLabel='values', title='Cell Timing Curve')
             elif (pinTimingIndex1 != '') and (pinTimingIndex2 == ''):
                 if (len(self.timingTabFigureXList) > 0) and (len(self.timingTabFigureYList) > 0):
-                    self.timingTabFigure.drawPlot(self.timingTabFigureXList, self.timingTabFigureYList, xLabel='index_2', yLabel='Timing (' + str(self.leakagePowerUnit) + ')', yUnit=self.leakagePowerUnit, title='Cell Timing Curve')
+                    self.timingTabFigure.drawPlot(self.timingTabFigureXList, self.timingTabFigureYList, xLabel='index_2', yLabel='Timing (' + str(self.timingUnit) + ')', yUnit=self.timingUnit, title='Cell Timing Curve')
             elif (pinTimingIndex1 == '') and (pinTimingIndex2 != ''):
                 if (len(self.timingTabFigureXList) > 0) and (len(self.timingTabFigureYList) > 0):
-                    self.timingTabFigure.drawPlot(self.timingTabFigureXList, self.timingTabFigureYList, xLabel='index_1', yLabel='Timing (' + str(self.leakagePowerUnit) + ')', yUnit=self.leakagePowerUnit, title='Cell Timing Curve')
+                    self.timingTabFigure.drawPlot(self.timingTabFigureXList, self.timingTabFigureYList, xLabel='index_1', yLabel='Timing (' + str(self.timingUnit) + ')', yUnit=self.timingUnit, title='Cell Timing Curve')
         elif self.timingTabMultiEnable:
             if (len(self.timingTabFigureXList) > 0) and (len(self.timingTabFigureYList) > 0):
                 self.timingTabFigure.drawPlot(self.timingTabFigureXList, self.timingTabFigureYList, xLabel='Cell-Num', yLabel='Timing (' + str(self.timingUnit) + ')', yUnit=self.timingUnit, title='Cell Timing Curve')
@@ -2369,13 +2369,13 @@ class mainWindow(QMainWindow):
                     self.internalPowerTabFigure.draw3DPlot(self.internalPowerTabFigureXArray, self.internalPowerTabFigureYArray, self.internalPowerTabFigureZArray, xLabel='index_1', yLabel='index_2', zLabel='values', title='Cell Internal Power Curve')
             elif (pinInternalPowerIndex1 != '') and (pinInternalPowerIndex2 == ''):
                 if (len(self.internalPowerTabFigureXList) > 0) and (len(self.internalPowerTabFigureYList) > 0):
-                    self.internalPowerTabFigure.drawPlot(self.internalPowerTabFigureXList, self.internalPowerTabFigureYList, xLabel='index_2', yLabel='Internal-Power (' + str(self.leakagePowerUnit) + ')', yUnit=self.leakagePowerUnit, title='Cell Internal Power Curve')
+                    self.internalPowerTabFigure.drawPlot(self.internalPowerTabFigureXList, self.internalPowerTabFigureYList, xLabel='index_2', yLabel='Internal-Power (' + str(self.internalPowerUnit) + ')', yUnit=self.internalPowerUnit, title='Cell Internal Power Curve')
             elif (pinInternalPowerIndex1 == '') and (pinInternalPowerIndex2 != ''):
                 if (len(self.internalPowerTabFigureXList) > 0) and (len(self.internalPowerTabFigureYList) > 0):
-                    self.internalPowerTabFigure.drawPlot(self.internalPowerTabFigureXList, self.internalPowerTabFigureYList, xLabel='index_1', yLabel='Internal-Power (' + str(self.leakagePowerUnit) + ')', yUnit=self.leakagePowerUnit, title='Cell Internal Power Curve')
+                    self.internalPowerTabFigure.drawPlot(self.internalPowerTabFigureXList, self.internalPowerTabFigureYList, xLabel='index_1', yLabel='Internal-Power (' + str(self.internalPowerUnit) + ')', yUnit=self.internalPowerUnit, title='Cell Internal Power Curve')
         elif self.internalPowerTabMultiEnable:
             if (len(self.internalPowerTabFigureXList) > 0) and (len(self.internalPowerTabFigureYList) > 0):
-                self.internalPowerTabFigure.drawPlot(self.internalPowerTabFigureXList, self.internalPowerTabFigureYList, xLabel='Cell-Num', yLabel='Internal-Power (' + str(self.leakagePowerUnit) + ')', yUnit=self.leakagePowerUnit, title='Cell Internal Power Curve')
+                self.internalPowerTabFigure.drawPlot(self.internalPowerTabFigureXList, self.internalPowerTabFigureYList, xLabel='Cell-Num', yLabel='Internal-Power (' + str(self.internalPowerUnit) + ')', yUnit=self.internalPowerUnit, title='Cell Internal Power Curve')
 #### Update Internal Power Tab (end) ####
 
 
