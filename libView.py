@@ -37,7 +37,7 @@ import libertyParser
 
 os.environ["PYTHONUNBUFFERED"]="1"
 
-def readArgs():
+def read_args():
     """
     Read in arguments.
     """
@@ -2383,7 +2383,7 @@ class mainWindow(QMainWindow):
 # Main Process #
 ################
 def main():
-    inputFileList = readArgs()
+    inputFileList = read_args()
     app = QApplication(sys.argv)
     mw = mainWindow(inputFileList)
     mw.show()
