@@ -1,16 +1,13 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
-##################################
+
 # FileName : libView.py
 # Author   : yanqing.li
 # Email    : liyanqing1987@163.com
 # Created  : 2019-03-15 11:11:11
 # Description :
-# libView.py is used to show the
-# contents of library files and 
-# compare the data of different
-# cells.
-##################################
+# libView.py is used to show the contents of library files and compare the data of different cells.
+
 import os
 import re
 import sys
@@ -29,13 +26,12 @@ import matplotlib
 matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
-from matplotlib import pyplot
-from mpl_toolkits.mplot3d import axes3d
 
 # For library file parsing.
 import libertyParser
 
-os.environ["PYTHONUNBUFFERED"]="1"
+os.environ["PYTHONUNBUFFERED"] = "1"
+
 
 def read_args():
     """
@@ -55,7 +51,8 @@ def read_args():
             print('*Error*: ' + str(inputFile) + ': No such file.')
             sys.exit(1)
 
-    return(args.input)
+    return args.input
+
 
 class pyplotFigure(FigureCanvasQTAgg):
     """
@@ -87,15 +84,16 @@ class pyplotFigure(FigureCanvasQTAgg):
         # If x axis items is string.
         self.fig.subplots_adjust(bottom=0.2)
         xticksLabels = ax.get_xticklabels()
+
         for xticksLabel in xticksLabels:
             xticksLabel.set_rotation(30)
             xticksLabel.set_fontsize(12)
 
-        # Set x/y labels. 
+        # Set x/y labels.
         ax.set_xlabel(xLabel)
         ax.set_ylabel(yLabel)
 
-        # Show grid. 
+        # Show grid.
         ax.grid(True)
 
         # Set title.
@@ -114,6 +112,7 @@ class pyplotFigure(FigureCanvasQTAgg):
             yLim = [yMin-1, yMax+1]
         else:
             xLim = [xMin, xMax]
+
             if yMin == yMax:
                 yLim = [yMin-1, yMax+1]
             else:
@@ -122,7 +121,7 @@ class pyplotFigure(FigureCanvasQTAgg):
         ax.set_xlim(xLim)
         ax.set_ylim(yLim)
 
-        # Show all point values, or peak value. 
+        # Show all point values, or peak value.
         for i in range(len(xList)):
             ax.text(xList[i], yList[i], str(yList[i]) + ' ' + str(yUnit))
 
@@ -138,12 +137,12 @@ class pyplotFigure(FigureCanvasQTAgg):
         ax = self.fig.add_subplot(111, projection='3d')
         ax.plot_wireframe(xArray, yArray, zArray)
 
-        # Set x/y/z labels. 
+        # Set x/y/z labels.
         ax.set_xlabel(xLabel)
         ax.set_ylabel(yLabel)
         ax.set_zlabel(zLabel)
 
-        # Show grid. 
+        # Show grid.
         ax.grid(True)
 
         # Set title.
@@ -152,6 +151,7 @@ class pyplotFigure(FigureCanvasQTAgg):
 
         # Show figure.
         self.draw()
+
 
 class mainWindow(QMainWindow):
     """
@@ -196,7 +196,7 @@ class mainWindow(QMainWindow):
         """
         Main process, draw the main graphic.
         """
-        # main window. 
+        # main window.
         self.cellListFrame = QFrame(self)
         self.mainFrame = QFrame(self)
 
@@ -214,13 +214,12 @@ class mainWindow(QMainWindow):
         self.genMenubar()
         self.initGui()
 
-        # Size and position. 
+        # Size and position.
         self.resize(1600, 600)
         self.centerWindow()
         self.setWindowTitle('libView')
 
-
-#### For Menu Bar (begin) ####
+# For Menu Bar (begin) #
     def genMenubar(self):
         """
         Generate menubar.
@@ -229,7 +228,7 @@ class mainWindow(QMainWindow):
 
         # File
         loadAction = QAction('Load', self)
-        loadAction.triggered.connect(lambda:self.loadLibFile())
+        loadAction.triggered.connect(lambda: self.loadLibFile())
 
         exitAction = QAction('Quit', self)
         exitAction.triggered.connect(qApp.quit)
@@ -263,8 +262,9 @@ class mainWindow(QMainWindow):
                 unitDic = myParser.getUnit()
 
                 if 'leakage_power_unit' in unitDic:
-                    leakagePowerUnit = re.sub('"', '', unitDic['leakage_power_unit'])
-                    leakagePowerUnit = re.sub('\d', '', leakagePowerUnit)
+                    leakagePowerUnit = re.sub(r'"', '', unitDic['leakage_power_unit'])
+                    leakagePowerUnit = re.sub(r'\d', '', leakagePowerUnit)
+
                     if self.leakagePowerUnit == '':
                         self.leakagePowerUnit = leakagePowerUnit
                         self.internalPowerUnit = leakagePowerUnit
@@ -272,18 +272,18 @@ class mainWindow(QMainWindow):
                         print('*Warning*: leakage_power_unit is "' + str(leakagePowerUnit) + '" on library file "' + str(libraryFile) + '", it is different with original library file, will ignore it.')
 
                 if 'time_unit' in unitDic:
-                    timingUnit = re.sub('"', '', unitDic['time_unit'])
-                    timingUnit = re.sub('\d', '', timingUnit)
+                    timingUnit = re.sub(r'"', '', unitDic['time_unit'])
+                    timingUnit = re.sub(r'\d', '', timingUnit)
+
                     if self.timingUnit == '':
                         self.timingUnit = timingUnit
                     elif self.timingUnit != timingUnit:
                         print('*Warning*: time_unit is "' + str(timingUnit) + '" on library file "' + str(libraryFile) + '", it is different with original library file, will ignore it.')
 
             self.updateCellListTree()
-#### For Menu Bar (end) ####
+# For Menu Bar (end) #
 
-
-#### Init Gui (begin) ####
+# Init Gui (begin) #
     def initGui(self):
         """
         Init Gui, init self.cellListFrame and self.mainFrame.
@@ -382,7 +382,7 @@ class mainWindow(QMainWindow):
 
     def tabWidgetCurrentChanged(self):
         """
-        Update the related QLabel if the current tab is changed. 
+        Update the related QLabel if the current tab is changed.
         """
         if self.tabWidget.currentIndex() == 0:
             self.updateAreaTabFigure()
@@ -499,8 +499,6 @@ class mainWindow(QMainWindow):
 
         timingTabGrid.setRowStretch(0, 1)
         timingTabGrid.setRowStretch(1, 20)
-        #timingTabGrid.setColumnStretch(0, 1)
-        #timingTabGrid.setColumnStretch(1, 3)
 
         self.timingTab.setLayout(timingTabGrid)
 
@@ -626,8 +624,6 @@ class mainWindow(QMainWindow):
 
         internalPowerTabGrid.setRowStretch(0, 1)
         internalPowerTabGrid.setRowStretch(1, 20)
-        #internalPowerTabGrid.setColumnStretch(0, 1)
-        #internalPowerTabGrid.setColumnStretch(1, 1)
 
         self.internalPowerTab.setLayout(internalPowerTabGrid)
 
@@ -716,15 +712,14 @@ class mainWindow(QMainWindow):
         internalPowerTabPinFrameGrid.addWidget(self.internalPowerTabIndex2Combo, 1, 7)
 
         self.internalPowerTabPinFrame.setLayout(internalPowerTabPinFrameGrid)
-#### Init Gui (end) ####
+# Init Gui (end) #
 
-
-#### Update Cell List Tree (begin) ####
+# Update Cell List Tree (begin) #
     def sortCellWithSize(self, origCellList):
         """
-        If cell format match "(.+?)D(\d+)\D.*" (\d+ is the cell size), sort the cell list with cell size.
+        If cell format match r'^(.+?)D(\\d+)(BWP.*)$', sort the cell list with cell size.
         """
-        seriesCellCompile = re.compile('^(.+?)D(\d+)(BWP.*)$')
+        seriesCellCompile = re.compile(r'^(.+?)D(\d+)(BWP.*)$')
         seriesCellDic = collections.OrderedDict()
         seriesCellDic['zzz'] = []
 
@@ -742,9 +737,11 @@ class mainWindow(QMainWindow):
 
         # Move sign cell sub-dict to 'zzz'.
         seriesCellList = list(seriesCellDic.keys())
+
         for seriesCell in seriesCellList:
             if seriesCell != 'zzz':
                 cellList = seriesCellDic[seriesCell]
+
                 if len(cellList) == 1:
                     seriesCellListValue = cellList[0]
                     seriesCellDic.pop(seriesCell)
@@ -757,14 +754,16 @@ class mainWindow(QMainWindow):
 
         for seriesCell in seriesCellList:
             seriesCellList = seriesCellDic[seriesCell]
+
             if seriesCell == 'zzz':
                 seriesCellList.sort()
             else:
-                seriesCellList.sort(key=lambda x:int(seriesCellCompile.match(x).group(2)))
+                seriesCellList.sort(key=lambda x: int(seriesCellCompile.match(x).group(2)))
+
             for cellName in seriesCellList:
                 sortedCellList.append(cellName)
 
-        return(sortedCellList)
+        return sortedCellList
 
     def updateCellListTree(self):
         """
@@ -778,14 +777,15 @@ class mainWindow(QMainWindow):
             libItem.setForeground(0, QBrush(Qt.blue))
             cellList = list(self.libDic[libraryFileName]['cellList'])
 
-            # Sort cell name with cell size (***D\d+***). 
+            # Sort cell name with cell size (***D\d+***).
             sortedCellList = self.sortCellWithSize(cellList)
 
-            # Show cells on left sideBar. 
+            # Show cells on left sideBar.
             for cellName in sortedCellList:
                 cellItem = QTreeWidgetItem(libItem)
                 cellItem.setText(0, cellName)
                 cellItem.setForeground(0, QBrush(Qt.green))
+
                 if (libraryFileName in self.specifiedLibDic) and (cellName in self.specifiedLibDic[libraryFileName]):
                     cellItem.setCheckState(0, Qt.Checked)
                 else:
@@ -802,15 +802,15 @@ class mainWindow(QMainWindow):
 
         for cellLeakagePowerDic in libCellLeakagePowerDic[cellName]:
             cellLeakagePowerValue = cellLeakagePowerDic.get('value', 'N/A')
-            cellLeakagePowerValue = re.sub('"', '', cellLeakagePowerValue)
+            cellLeakagePowerValue = re.sub(r'"', '', cellLeakagePowerValue)
             cellLeakagePowerWhen = cellLeakagePowerDic.get('when', 'N/A')
-            cellLeakagePowerWhen = re.sub('"', '', cellLeakagePowerWhen)
+            cellLeakagePowerWhen = re.sub(r'"', '', cellLeakagePowerWhen)
             cellLeakagePowerRelatedPgPin = cellLeakagePowerDic.get('related_pg_pin', 'N/A')
-            cellLeakagePowerRelatedPgPin = re.sub('"', '', cellLeakagePowerRelatedPgPin)
+            cellLeakagePowerRelatedPgPin = re.sub(r'"', '', cellLeakagePowerRelatedPgPin)
             tmpLeakagePowerDic = {
-                                  'value' : cellLeakagePowerValue,
-                                  'when' : cellLeakagePowerWhen,
-                                  'related_pg_pin' : cellLeakagePowerRelatedPgPin,
+                                  'value': cellLeakagePowerValue,
+                                  'when': cellLeakagePowerWhen,
+                                  'related_pg_pin': cellLeakagePowerRelatedPgPin,
                                  }
             self.specifiedLibDic[libraryFileName][cellName]['leakage_power'].append(tmpLeakagePowerDic)
 
@@ -826,23 +826,23 @@ class mainWindow(QMainWindow):
 
         for pinTimingDic in pinTimingDicList:
             pinTimingRelatedPin = pinTimingDic.get('related_pin', 'N/A')
-            pinTimingRelatedPin = re.sub('"', '', pinTimingRelatedPin)
+            pinTimingRelatedPin = re.sub(r'"', '', pinTimingRelatedPin)
             pinTimingRelatedPgPin = pinTimingDic.get('related_pg_pin', 'N/A')
-            pinTimingRelatedPgPin = re.sub('"', '', pinTimingRelatedPgPin)
+            pinTimingRelatedPgPin = re.sub(r'"', '', pinTimingRelatedPgPin)
             pinTimingTimingSense = pinTimingDic.get('timing_sense', 'N/A')
-            pinTimingTimingSense = re.sub('"', '', pinTimingTimingSense)
+            pinTimingTimingSense = re.sub(r'"', '', pinTimingTimingSense)
             pinTimingTimingType = pinTimingDic.get('timing_type', 'N/A')
-            pinTimingTimingType = re.sub('"', '', pinTimingTimingType)
+            pinTimingTimingType = re.sub(r'"', '', pinTimingTimingType)
             pinTimingWhen = pinTimingDic.get('when', 'N/A')
-            pinTimingWhen = re.sub('"', '', pinTimingWhen)
+            pinTimingWhen = re.sub(r'"', '', pinTimingWhen)
 
             tmpTimingDic = collections.OrderedDict()
             tmpTimingDic = {
-                            'related_pin' : pinTimingRelatedPin,
-                            'related_pg_pin' : pinTimingRelatedPgPin,
-                            'timing_sense' : pinTimingTimingSense,
-                            'timing_type' : pinTimingTimingType,
-                            'when' : pinTimingWhen,
+                            'related_pin': pinTimingRelatedPin,
+                            'related_pg_pin': pinTimingRelatedPgPin,
+                            'timing_sense': pinTimingTimingSense,
+                            'timing_type': pinTimingTimingType,
+                            'when': pinTimingWhen,
                            }
             tmpTimingDic['table_type'] = collections.OrderedDict()
 
@@ -861,22 +861,23 @@ class mainWindow(QMainWindow):
             for tableType in pinTimingDic['table_type'].keys():
                 if (tableType == 'cell_rise') or (tableType == 'rise_transition') or (tableType == 'cell_fall') or (tableType == 'fall_transition') or (tableType == 'rise_constraint') or (tableType == 'fall_constraint') or (tableType == 'ocv_sigma_rise_contraint') or (tableType == 'ocv_sigma_fall_contraint') or (tableType == 'ocv_sigma_rise_transition') or (tableType == 'ocv_sigma_fall_transition') or (tableType == 'ocv_sigma_cell_rise') or (tableType == 'ocv_sigma_cell_fall'):
                     pinTimingTableTypeDic = pinTimingDic['table_type'][tableType]
+
                     if 'index_1' in pinTimingTableTypeDic:
                         pinTimingGroupIndex1 = pinTimingTableTypeDic['index_1']
-                        pinTimingGroupIndex1 = re.sub('\(', '', pinTimingGroupIndex1)
-                        pinTimingGroupIndex1 = re.sub('\)', '', pinTimingGroupIndex1)
-                        pinTimingGroupIndex1 = re.sub('"', '', pinTimingGroupIndex1)
-                        pinTimingGroupIndex1 = re.sub(',', '', pinTimingGroupIndex1)
+                        pinTimingGroupIndex1 = re.sub(r'\(', '', pinTimingGroupIndex1)
+                        pinTimingGroupIndex1 = re.sub(r'\)', '', pinTimingGroupIndex1)
+                        pinTimingGroupIndex1 = re.sub(r'"', '', pinTimingGroupIndex1)
+                        pinTimingGroupIndex1 = re.sub(r',', ' ', pinTimingGroupIndex1)
                         pinTimingGroupIndex1 = pinTimingGroupIndex1.split()
                     else:
                         pinTimingGroupIndex1 = []
 
                     if 'index_2' in pinTimingTableTypeDic:
                         pinTimingGroupIndex2 = pinTimingTableTypeDic['index_2']
-                        pinTimingGroupIndex2 = re.sub('\(', '', pinTimingGroupIndex2)
-                        pinTimingGroupIndex2 = re.sub('\)', '', pinTimingGroupIndex2)
-                        pinTimingGroupIndex2 = re.sub('"', '', pinTimingGroupIndex2)
-                        pinTimingGroupIndex2 = re.sub(',', '', pinTimingGroupIndex2)
+                        pinTimingGroupIndex2 = re.sub(r'\(', '', pinTimingGroupIndex2)
+                        pinTimingGroupIndex2 = re.sub(r'\)', '', pinTimingGroupIndex2)
+                        pinTimingGroupIndex2 = re.sub(r'"', '', pinTimingGroupIndex2)
+                        pinTimingGroupIndex2 = re.sub(r',', ' ', pinTimingGroupIndex2)
                         pinTimingGroupIndex2 = pinTimingGroupIndex2.split()
                     else:
                         pinTimingGroupIndex2 = []
@@ -884,21 +885,22 @@ class mainWindow(QMainWindow):
                     if 'values' in pinTimingTableTypeDic:
                         pinTimingGroupValues = []
                         tmpCellPinTimingGroupValues = pinTimingTableTypeDic['values']
-                        tmpCellPinTimingGroupValues = re.sub('\(', '', tmpCellPinTimingGroupValues)
-                        tmpCellPinTimingGroupValues = re.sub('\)', '', tmpCellPinTimingGroupValues)
-                        tmpCellPinTimingGroupValues = re.split('"\s*,', tmpCellPinTimingGroupValues)
+                        tmpCellPinTimingGroupValues = re.sub(r'\(', '', tmpCellPinTimingGroupValues)
+                        tmpCellPinTimingGroupValues = re.sub(r'\)', '', tmpCellPinTimingGroupValues)
+                        tmpCellPinTimingGroupValues = re.split(r'"\s*,', tmpCellPinTimingGroupValues)
+
                         for pinTimingGroupValue in tmpCellPinTimingGroupValues:
-                            pinTimingGroupValue = re.sub('"', '', pinTimingGroupValue)
-                            pinTimingGroupValue = re.sub(',', '', pinTimingGroupValue)
+                            pinTimingGroupValue = re.sub(r'"', '', pinTimingGroupValue)
+                            pinTimingGroupValue = re.sub(r',', ' ', pinTimingGroupValue)
                             pinTimingGroupValue = pinTimingGroupValue.split()
                             pinTimingGroupValues.append(pinTimingGroupValue)
                     else:
                         pinTimingGroupValues = []
 
                     tmpTimingDic['table_type'][tableType] = {
-                                                             'index_1' : pinTimingGroupIndex1,
-                                                             'index_2' : pinTimingGroupIndex2,
-                                                             'values' : pinTimingGroupValues,
+                                                             'index_1': pinTimingGroupIndex1,
+                                                             'index_2': pinTimingGroupIndex2,
+                                                             'values': pinTimingGroupValues,
                                                             }
 
                     tmpPinTimingDic['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'][pinTimingTimingSense]['timing_type'][pinTimingTimingType]['when'][pinTimingWhen]['table_type'].setdefault(tableType, collections.OrderedDict())
@@ -907,7 +909,7 @@ class mainWindow(QMainWindow):
 
             tmpTimingDicList.append(tmpTimingDic)
 
-        return(tmpTimingDicList, tmpPinTimingDic)
+        return (tmpTimingDicList, tmpPinTimingDic)
 
     def getTimingInfo(self, libraryFileName, cellName, libPinDic):
         if libPinDic['cell'][cellName]:
@@ -915,16 +917,21 @@ class mainWindow(QMainWindow):
                 if key == 'bundle':
                     for bundleName in libPinDic['cell'][cellName]['bundle']:
                         bundleTimingDicList = []
+
                         if 'timing' in libPinDic['cell'][cellName]['bundle'][bundleName]:
                             bundleTimingDicList = libPinDic['cell'][cellName]['bundle'][bundleName]['timing']
+
                         if 'pin' in libPinDic['cell'][cellName]['bundle'][bundleName]:
                             for pinName in libPinDic['cell'][cellName]['bundle'][bundleName]['pin']:
                                 if ('timing' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]) or (len(bundleTimingDicList) > 0):
                                     libPinTimingDicList = []
+
                                     if 'timing' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]:
                                         libPinTimingDicList = libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]['timing']
+
                                     if len(bundleTimingDicList) > 0:
                                         libPinTimingDicList.extend(bundleTimingDicList)
+
                                     (tmpTimingDicList, tmpPinTimingDic) = self.getPinTimingInfo(libPinTimingDicList)
                                     self.specifiedLibDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
                                     self.specifiedLibDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
@@ -936,32 +943,41 @@ class mainWindow(QMainWindow):
                                     self.timingTabDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
                                     self.timingTabDic[libraryFileName][cellName]['bundle'][bundleName].setdefault('pin', collections.OrderedDict())
                                     self.timingTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'].setdefault(pinName, collections.OrderedDict())
+
                                     if tmpPinTimingDic:
                                         self.timingTabDic[libraryFileName][cellName]['bundle'][bundleName]['pin'][pinName].setdefault('timing', tmpPinTimingDic)
                 elif key == 'bus':
                     for busName in libPinDic['cell'][cellName]['bus']:
                         busTimingDicList = []
+
                         if 'timing' in libPinDic['cell'][cellName]['bus'][busName]:
                             busTimingDicList = libPinDic['cell'][cellName]['bus'][busName]['timing']
+
                         if 'pin' in libPinDic['cell'][cellName]['bus'][busName]:
                             for pinName in libPinDic['cell'][cellName]['bus'][busName]['pin']:
                                 if ('timing' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]) or (len(busTimingDicList) > 0):
                                     libPinTimingDicList = []
+
                                     if 'timing' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]:
                                         libPinTimingDicList = libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]['timing']
+
                                     if len(busTimingDicList) > 0:
                                         libPinTimingDicList.extend(busTimingDicList)
+
                                     (tmpTimingDicList, tmpPinTimingDic) = self.getPinTimingInfo(libPinTimingDicList)
                                     self.specifiedLibDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
                                     self.specifiedLibDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
                                     self.specifiedLibDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
                                     self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
+
                                     if tmpTimingDicList:
                                         self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('timing', tmpTimingDicList)
+
                                     self.timingTabDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
                                     self.timingTabDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
                                     self.timingTabDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
                                     self.timingTabDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
+
                                     if tmpPinTimingDic:
                                         self.timingTabDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('timing', tmpPinTimingDic)
                 elif key == 'pin':
@@ -970,10 +986,13 @@ class mainWindow(QMainWindow):
                             (tmpTimingDicList, tmpPinTimingDic) = self.getPinTimingInfo(libPinDic['cell'][cellName]['pin'][pinName]['timing'])
                             self.specifiedLibDic[libraryFileName][cellName].setdefault('pin', collections.OrderedDict())
                             self.specifiedLibDic[libraryFileName][cellName]['pin'].setdefault(pinName, collections.OrderedDict())
+
                             if tmpTimingDicList:
                                 self.specifiedLibDic[libraryFileName][cellName]['pin'][pinName].setdefault('timing', tmpTimingDicList)
+
                             self.timingTabDic[libraryFileName][cellName].setdefault('pin', collections.OrderedDict())
                             self.timingTabDic[libraryFileName][cellName]['pin'].setdefault(pinName, collections.OrderedDict())
+
                             if tmpPinTimingDic:
                                 self.timingTabDic[libraryFileName][cellName]['pin'][pinName].setdefault('timing', tmpPinTimingDic)
 
@@ -983,17 +1002,17 @@ class mainWindow(QMainWindow):
 
         for pinInternalPowerDic in pinInternalPowerDicList:
             pinInternalPowerRelatedPin = pinInternalPowerDic.get('related_pin', 'N/A')
-            pinInternalPowerRelatedPin = re.sub('"', '', pinInternalPowerRelatedPin)
+            pinInternalPowerRelatedPin = re.sub(r'"', '', pinInternalPowerRelatedPin)
             pinInternalPowerRelatedPgPin = pinInternalPowerDic.get('related_pg_pin', 'N/A')
-            pinInternalPowerRelatedPgPin = re.sub('"', '', pinInternalPowerRelatedPgPin)
+            pinInternalPowerRelatedPgPin = re.sub(r'"', '', pinInternalPowerRelatedPgPin)
             pinInternalPowerWhen = pinInternalPowerDic.get('when', 'N/A')
-            pinInternalPowerWhen = re.sub('"', '', pinInternalPowerWhen)
+            pinInternalPowerWhen = re.sub(r'"', '', pinInternalPowerWhen)
 
             tmpInternalPowerDic = collections.OrderedDict()
             tmpInternalPowerDic = {
-                            'related_pin' : pinInternalPowerRelatedPin,
-                            'related_pg_pin' : pinInternalPowerRelatedPgPin,
-                            'when' : pinInternalPowerWhen,
+                            'related_pin': pinInternalPowerRelatedPin,
+                            'related_pg_pin': pinInternalPowerRelatedPgPin,
+                            'when': pinInternalPowerWhen,
                            }
             tmpInternalPowerDic['table_type'] = collections.OrderedDict()
 
@@ -1008,22 +1027,23 @@ class mainWindow(QMainWindow):
             for tableType in pinInternalPowerDic['table_type'].keys():
                 if (tableType == 'fall_power') or (tableType == 'rise_power'):
                     pinInternalPowerTableTypeDic = pinInternalPowerDic['table_type'][tableType]
+
                     if 'index_1' in pinInternalPowerTableTypeDic:
                         pinInternalPowerGroupIndex1 = pinInternalPowerTableTypeDic['index_1']
-                        pinInternalPowerGroupIndex1 = re.sub('\(', '', pinInternalPowerGroupIndex1)
-                        pinInternalPowerGroupIndex1 = re.sub('\)', '', pinInternalPowerGroupIndex1)
-                        pinInternalPowerGroupIndex1 = re.sub('"', '', pinInternalPowerGroupIndex1)
-                        pinInternalPowerGroupIndex1 = re.sub(',', '', pinInternalPowerGroupIndex1)
+                        pinInternalPowerGroupIndex1 = re.sub(r'\(', '', pinInternalPowerGroupIndex1)
+                        pinInternalPowerGroupIndex1 = re.sub(r'\)', '', pinInternalPowerGroupIndex1)
+                        pinInternalPowerGroupIndex1 = re.sub(r'"', '', pinInternalPowerGroupIndex1)
+                        pinInternalPowerGroupIndex1 = re.sub(r',', ' ', pinInternalPowerGroupIndex1)
                         pinInternalPowerGroupIndex1 = pinInternalPowerGroupIndex1.split()
                     else:
                         pinInternalPowerGroupIndex1 = []
 
                     if 'index_2' in pinInternalPowerTableTypeDic:
                         pinInternalPowerGroupIndex2 = pinInternalPowerTableTypeDic['index_2']
-                        pinInternalPowerGroupIndex2 = re.sub('\(', '', pinInternalPowerGroupIndex2)
-                        pinInternalPowerGroupIndex2 = re.sub('\)', '', pinInternalPowerGroupIndex2)
-                        pinInternalPowerGroupIndex2 = re.sub('"', '', pinInternalPowerGroupIndex2)
-                        pinInternalPowerGroupIndex2 = re.sub(',', '', pinInternalPowerGroupIndex2)
+                        pinInternalPowerGroupIndex2 = re.sub(r'\(', '', pinInternalPowerGroupIndex2)
+                        pinInternalPowerGroupIndex2 = re.sub(r'\)', '', pinInternalPowerGroupIndex2)
+                        pinInternalPowerGroupIndex2 = re.sub(r'"', '', pinInternalPowerGroupIndex2)
+                        pinInternalPowerGroupIndex2 = re.sub(r',', ' ', pinInternalPowerGroupIndex2)
                         pinInternalPowerGroupIndex2 = pinInternalPowerGroupIndex2.split()
                     else:
                         pinInternalPowerGroupIndex2 = []
@@ -1031,21 +1051,22 @@ class mainWindow(QMainWindow):
                     if 'values' in pinInternalPowerTableTypeDic:
                         pinInternalPowerGroupValues = []
                         tmpCellPinInternalPowerGroupValues = pinInternalPowerTableTypeDic['values']
-                        tmpCellPinInternalPowerGroupValues = re.sub('\(', '', tmpCellPinInternalPowerGroupValues)
-                        tmpCellPinInternalPowerGroupValues = re.sub('\)', '', tmpCellPinInternalPowerGroupValues)
-                        tmpCellPinInternalPowerGroupValues = re.split('"\s*,', tmpCellPinInternalPowerGroupValues)
+                        tmpCellPinInternalPowerGroupValues = re.sub(r'\(', '', tmpCellPinInternalPowerGroupValues)
+                        tmpCellPinInternalPowerGroupValues = re.sub(r'\)', '', tmpCellPinInternalPowerGroupValues)
+                        tmpCellPinInternalPowerGroupValues = re.split(r'"\s*,', tmpCellPinInternalPowerGroupValues)
+
                         for pinInternalPowerGroupValue in tmpCellPinInternalPowerGroupValues:
-                            pinInternalPowerGroupValue = re.sub('"', '', pinInternalPowerGroupValue)
-                            pinInternalPowerGroupValue = re.sub(',', '', pinInternalPowerGroupValue)
+                            pinInternalPowerGroupValue = re.sub(r'"', '', pinInternalPowerGroupValue)
+                            pinInternalPowerGroupValue = re.sub(r',', ' ', pinInternalPowerGroupValue)
                             pinInternalPowerGroupValue = pinInternalPowerGroupValue.split()
                             pinInternalPowerGroupValues.append(pinInternalPowerGroupValue)
                     else:
                         pinInternalPowerGroupValues = []
 
                     tmpInternalPowerDic['table_type'][tableType] = {
-                                                             'index_1' : pinInternalPowerGroupIndex1,
-                                                             'index_2' : pinInternalPowerGroupIndex2,
-                                                             'values' : pinInternalPowerGroupValues,
+                                                             'index_1': pinInternalPowerGroupIndex1,
+                                                             'index_2': pinInternalPowerGroupIndex2,
+                                                             'values': pinInternalPowerGroupValues,
                                                             }
 
                     tmpPinInternalPowerDic['related_pin'][pinInternalPowerRelatedPin]['related_pg_pin'][pinInternalPowerRelatedPgPin]['when'][pinInternalPowerWhen]['table_type'].setdefault(tableType, collections.OrderedDict())
@@ -1054,7 +1075,7 @@ class mainWindow(QMainWindow):
 
             tmpInternalPowerDicList.append(tmpInternalPowerDic)
 
-        return(tmpInternalPowerDicList, tmpPinInternalPowerDic)
+        return (tmpInternalPowerDicList, tmpPinInternalPowerDic)
 
     def getInternalPowerInfo(self, libraryFileName, cellName, libPinDic):
         if libPinDic['cell'][cellName]:
@@ -1062,16 +1083,21 @@ class mainWindow(QMainWindow):
                 if key == 'bundle':
                     for bundleName in libPinDic['cell'][cellName]['bundle']:
                         bundleInternalPowerDicList = []
+
                         if 'internal_power' in libPinDic['cell'][cellName]['bundle'][bundleName]:
                             bundleInternalPowerDicList = libPinDic['cell'][cellName]['bundle'][bundleName]['internal_power']
+
                         if 'pin' in libPinDic['cell'][cellName]['bundle'][bundleName]:
                             for pinName in libPinDic['cell'][cellName]['bundle'][bundleName]['pin']:
                                 if ('internal_power' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]) or (len(bundleInternalPowerDicList) > 0):
                                     libPinInternalPowerDicList = []
+
                                     if 'internal_power' in libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]:
                                         libPinInternalPowerDicList = libPinDic['cell'][cellName]['bundle'][bundleName]['pin'][pinName]['internal_power']
+
                                     if len(bundleInternalPowerDicList) > 0:
                                         libPinInternalPowerDicList.extend(bundleInternalPowerDicList)
+
                                     (tmpInternalPowerDicList, tmpPinInternalPowerDic) = self.getPinInternalPowerInfo(libPinInternalPowerDicList)
                                     self.specifiedLibDic[libraryFileName][cellName].setdefault('bundle', collections.OrderedDict())
                                     self.specifiedLibDic[libraryFileName][cellName]['bundle'].setdefault(bundleName, collections.OrderedDict())
@@ -1088,27 +1114,35 @@ class mainWindow(QMainWindow):
                 elif key == 'bus':
                     for busName in libPinDic['cell'][cellName]['bus']:
                         busInternalPowerDicList = []
+
                         if 'internal_power' in libPinDic['cell'][cellName]['bus'][busName]:
                             busInternalPowerDicList = libPinDic['cell'][cellName]['bus'][busName]['internal_power']
+
                         if 'pin' in libPinDic['cell'][cellName]['bus'][busName]:
                             for pinName in libPinDic['cell'][cellName]['bus'][busName]['pin']:
                                 if ('internal_power' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]) or (len(busInternalPowerDicList) > 0):
                                     libPinInternalPowerDicList = []
+
                                     if 'internal_power' in libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]:
                                         libPinInternalPowerDicList = libPinDic['cell'][cellName]['bus'][busName]['pin'][pinName]['internal_power']
+
                                     if len(busInternalPowerDicList) > 0:
                                         libPinInternalPowerDicList.extend(busInternalPowerDicList)
+
                                     (tmpInternalPowerDicList, tmpPinInternalPowerDic) = self.getPinInternalPowerInfo(libPinInternalPowerDicList)
                                     self.specifiedLibDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
                                     self.specifiedLibDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
                                     self.specifiedLibDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
                                     self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
+
                                     if tmpInternalPowerDicList:
                                         self.specifiedLibDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('internal_power', tmpInternalPowerDicList)
+
                                     self.internalPowerTabDic[libraryFileName][cellName].setdefault('bus', collections.OrderedDict())
                                     self.internalPowerTabDic[libraryFileName][cellName]['bus'].setdefault(busName, collections.OrderedDict())
                                     self.internalPowerTabDic[libraryFileName][cellName]['bus'][busName].setdefault('pin', collections.OrderedDict())
                                     self.internalPowerTabDic[libraryFileName][cellName]['bus'][busName]['pin'].setdefault(pinName, collections.OrderedDict())
+
                                     if tmpPinInternalPowerDic:
                                         self.internalPowerTabDic[libraryFileName][cellName]['bus'][busName]['pin'][pinName].setdefault('internal_power', tmpPinInternalPowerDic)
                 elif key == 'pin':
@@ -1117,10 +1151,13 @@ class mainWindow(QMainWindow):
                             (tmpInternalPowerDicList, tmpPinInternalPowerDic) = self.getPinInternalPowerInfo(libPinDic['cell'][cellName]['pin'][pinName]['internal_power'])
                             self.specifiedLibDic[libraryFileName][cellName].setdefault('pin', collections.OrderedDict())
                             self.specifiedLibDic[libraryFileName][cellName]['pin'].setdefault(pinName, collections.OrderedDict())
+
                             if tmpInternalPowerDicList:
                                 self.specifiedLibDic[libraryFileName][cellName]['pin'][pinName].setdefault('internal_power', tmpInternalPowerDicList)
+
                             self.internalPowerTabDic[libraryFileName][cellName].setdefault('pin', collections.OrderedDict())
                             self.internalPowerTabDic[libraryFileName][cellName]['pin'].setdefault(pinName, collections.OrderedDict())
+
                             if tmpPinInternalPowerDic:
                                 self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName].setdefault('internal_power', tmpPinInternalPowerDic)
 
@@ -1132,8 +1169,8 @@ class mainWindow(QMainWindow):
         selectedCellList = cellSelectString.split()
 
         for i in range(len(selectedCellList)):
-            if re.search('\*', selectedCellList[i]):
-                selectedCellList[i] = re.sub('\*', '.*', selectedCellList[i])
+            if re.search(r'\*', selectedCellList[i]):
+                selectedCellList[i] = re.sub(r'\*', '.*', selectedCellList[i])
 
         item = QTreeWidgetItemIterator(self.cellListTree)
 
@@ -1141,9 +1178,11 @@ class mainWindow(QMainWindow):
             if item.value().parent():
                 if item.value().checkState(0) == Qt.Checked:
                     item.value().setCheckState(0, Qt.Unchecked)
+
                 cellName = item.value().text(0)
+
                 for selectedCell in selectedCellList:
-                    if re.match('^' + str(selectedCell) + '$', cellName):
+                    if re.match(r'^' + str(selectedCell) + '$', cellName):
                         item.value().setCheckState(0, Qt.Checked)
                         break
 
@@ -1169,6 +1208,7 @@ class mainWindow(QMainWindow):
                 if item.value().checkState(0) == Qt.Checked:
                     if libraryFileName not in self.specifiedLibDic:
                         self.specifiedLibDic[libraryFileName] = collections.OrderedDict()
+
                     if cellName not in self.specifiedLibDic[libraryFileName]:
                         self.specifiedLibDic[libraryFileName][cellName] = collections.OrderedDict()
                         self.specifiedCellCount += 1
@@ -1176,6 +1216,7 @@ class mainWindow(QMainWindow):
                     if (libraryFileName in self.specifiedLibDic) and (cellName in self.specifiedLibDic[libraryFileName]):
                         del self.specifiedLibDic[libraryFileName][cellName]
                         self.specifiedCellCount -= 1
+
                         if len(self.specifiedLibDic[libraryFileName]) == 0:
                             del self.specifiedLibDic[libraryFileName]
 
@@ -1209,7 +1250,7 @@ class mainWindow(QMainWindow):
                 # timing
                 self.getTimingInfo(libraryFileName, cellName, libPinDic)
 
-                # internal power    
+                # internal power
                 self.getInternalPowerInfo(libraryFileName, cellName, libPinDic)
 
         # Check tab multi-enable.
@@ -1236,6 +1277,7 @@ class mainWindow(QMainWindow):
             for libraryFileName in tabDic.keys():
                 for cellName in tabDic[libraryFileName]:
                     tabCellDic = tabDic[libraryFileName][cellName]
+
                     if not lastTabCellDic:
                         lastTabCellDic = copy.deepcopy(tabCellDic)
                     else:
@@ -1247,11 +1289,10 @@ class mainWindow(QMainWindow):
                 if not tabMultiEnable:
                     break
 
-        return(tabMultiEnable)
-#### Update Cell List Tree (end) ####
+        return (tabMultiEnable)
+# Update Cell List Tree (end) #
 
-
-#### Update Main Frame (begin) ####
+# Update Main Frame (begin) #
     def updateMainFrame(self):
         """
         Update self.mainFrame.
@@ -1274,6 +1315,7 @@ class mainWindow(QMainWindow):
             for cellName in self.specifiedLibDic[libraryFileName].keys():
                 if libraryFileName not in specifiedLibList:
                     specifiedLibList.append(libraryFileName)
+
                 if cellName not in specifiedCellList:
                     specifiedCellList.append(cellName)
 
@@ -1288,10 +1330,9 @@ class mainWindow(QMainWindow):
         self.updateLeakagePowerTab()
         self.updateTimingTab()
         self.updateInternalPowerTab()
-#### Update Main Frame (end) ####
+# Update Main Frame (end) #
 
-
-#### Update Area Tab (begin) ####
+# Update Area Tab (begin) #
     def updateAreaTab(self):
         """
         Update area tab.
@@ -1331,10 +1372,9 @@ class mainWindow(QMainWindow):
         if self.specifiedCellCount > 1:
             if len(self.areaTabFigureXList) > 0:
                 self.areaTabFigure.drawPlot(self.areaTabFigureXList, self.areaTabFigureYList, xLabel='Cell-Num', yLabel='Area', yUnit='', title='Cell Area Curve')
-#### Update Area Tab (end) ####
+# Update Area Tab (end) #
 
-
-#### Update Leakage Power Tab (begin) ####
+# Update Leakage Power Tab (begin) #
     def updateLeakagePowerTab(self):
         """
         Update leakagePower tab.
@@ -1361,6 +1401,7 @@ class mainWindow(QMainWindow):
                     self.leakagePowerTabWhenCombo.addItems(cellWhenList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1381,6 +1422,7 @@ class mainWindow(QMainWindow):
                     self.leakagePowerTabRelatedPgPinCombo.addItems(cellRelatedPgPinList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1399,6 +1441,7 @@ class mainWindow(QMainWindow):
             specifiedWhen = self.leakagePowerTabWhenCombo.currentText().strip()
             specifiedRelatedPgPin = self.leakagePowerTabRelatedPgPinCombo.currentText().strip()
             row = 0
+
             for libraryFileName in self.specifiedLibDic.keys():
                 for cellName in self.specifiedLibDic[libraryFileName]:
                     self.leakagePowerTabTable.setItem(row, 0, QTableWidgetItem(libraryFileName))
@@ -1406,21 +1449,26 @@ class mainWindow(QMainWindow):
                     self.leakagePowerTabTable.setItem(row, 2, QTableWidgetItem(specifiedWhen))
                     self.leakagePowerTabTable.setItem(row, 3, QTableWidgetItem(specifiedRelatedPgPin))
                     specifiedValue = 0
+
                     for tmpDic in self.specifiedLibDic[libraryFileName][cellName]['leakage_power']:
                         if (tmpDic['when'] == specifiedWhen) and (tmpDic['related_pg_pin'] == specifiedRelatedPgPin):
                             specifiedValue = tmpDic['value']
                             break
+
                     self.leakagePowerTabTable.setItem(row, 4, QTableWidgetItem(specifiedValue))
                     self.leakagePowerTabFigureXList.append('cell_' + str(row+1))
                     self.leakagePowerTabFigureYList.append(float(specifiedValue))
                     row += 1
         else:
             leakagePowerTabTableRowCount = 0
+
             for libraryFileName in self.specifiedLibDic.keys():
                 for cellName in self.specifiedLibDic[libraryFileName]:
                     leakagePowerTabTableRowCount += len(self.specifiedLibDic[libraryFileName][cellName]['leakage_power'])
+
             self.leakagePowerTabTable.setRowCount(leakagePowerTabTableRowCount)
             row = 0
+
             for libraryFileName in self.specifiedLibDic.keys():
                 for cellName in self.specifiedLibDic[libraryFileName]:
                     for cellLeakagePowerDic in self.specifiedLibDic[libraryFileName][cellName]['leakage_power']:
@@ -1445,10 +1493,9 @@ class mainWindow(QMainWindow):
         if self.leakagePowerTabMultiEnable:
             if len(self.leakagePowerTabFigureXList) > 0:
                 self.leakagePowerTabFigure.drawPlot(self.leakagePowerTabFigureXList, self.leakagePowerTabFigureYList, xLabel='Cell-Num', yLabel='Leakge-Power (' + str(self.leakagePowerUnit) + ')', yUnit=self.leakagePowerUnit, title='Cell Leakage Power Curve')
-#### Update Leakage Power Tab (end) ####
+# Update Leakage Power Tab (end) #
 
-
-#### Update Timing Tab (begin) ####
+# Update Timing Tab (begin) #
     def updateTimingTab(self):
         """
         Update timing tab.
@@ -1479,6 +1526,7 @@ class mainWindow(QMainWindow):
                         self.timingTabBundleCombo.addItems(cellBundleList)
                         finish = True
                         break
+
                 if finish:
                     break
 
@@ -1498,6 +1546,7 @@ class mainWindow(QMainWindow):
                         self.timingTabBusCombo.addItems(cellBusList)
                         finish = True
                         break
+
                 if finish:
                     break
 
@@ -1519,6 +1568,7 @@ class mainWindow(QMainWindow):
                 for cellName in self.timingTabDic[libraryFileName]:
                     specifiedBundle = self.timingTabBundleCombo.currentText().strip()
                     specifiedBus = self.timingTabBusCombo.currentText().strip()
+
                     if specifiedBundle != '':
                         pinList = list(set(list(self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'].keys())))
                     elif specifiedBus != '':
@@ -1528,9 +1578,11 @@ class mainWindow(QMainWindow):
                             pinList = list(set(list(self.timingTabDic[libraryFileName][cellName]['pin'].keys())))
                         else:
                             pinList = []
+
                     self.timingTabPinCombo.addItems(pinList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1550,6 +1602,7 @@ class mainWindow(QMainWindow):
                     specifiedBundle = self.timingTabBundleCombo.currentText().strip()
                     specifiedBus = self.timingTabBusCombo.currentText().strip()
                     pinTimingRelatedPinList = []
+
                     if specifiedBundle != '':
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinTimingRelatedPinList = list(set(list(self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['timing']['related_pin'].keys())))
@@ -1559,9 +1612,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinTimingRelatedPinList = list(set(list(self.timingTabDic[libraryFileName][cellName]['pin'][pinName]['timing']['related_pin'].keys())))
+
                     self.timingTabRelatedPinCombo.addItems(pinTimingRelatedPinList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1582,6 +1637,7 @@ class mainWindow(QMainWindow):
                     specifiedBundle = self.timingTabBundleCombo.currentText().strip()
                     specifiedBus = self.timingTabBusCombo.currentText().strip()
                     pinTimingRelatedPgPinList = []
+
                     if specifiedBundle != '':
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinTimingRelatedPgPinList = list(set(list(self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'].keys())))
@@ -1591,9 +1647,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinTimingRelatedPgPinList = list(set(list(self.timingTabDic[libraryFileName][cellName]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'].keys())))
+
                     self.timingTabRelatedPgPinCombo.addItems(pinTimingRelatedPgPinList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1615,6 +1673,7 @@ class mainWindow(QMainWindow):
                     specifiedBundle = self.timingTabBundleCombo.currentText().strip()
                     specifiedBus = self.timingTabBusCombo.currentText().strip()
                     pinTimingTimingSenseList = []
+
                     if specifiedBundle != '':
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinTimingTimingSenseList = list(set(list(self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'].keys())))
@@ -1624,9 +1683,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinTimingTimingSenseList = list(set(list(self.timingTabDic[libraryFileName][cellName]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'].keys())))
+
                     self.timingTabTimingSenseCombo.addItems(pinTimingTimingSenseList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1649,6 +1710,7 @@ class mainWindow(QMainWindow):
                     specifiedBundle = self.timingTabBundleCombo.currentText().strip()
                     specifiedBus = self.timingTabBusCombo.currentText().strip()
                     pinTimingTimingTypeList = []
+
                     if specifiedBundle != '':
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinTimingTimingTypeList = list(set(list(self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'][pinTimingTimingSense]['timing_type'].keys())))
@@ -1658,9 +1720,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinTimingTimingTypeList = list(set(list(self.timingTabDic[libraryFileName][cellName]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'][pinTimingTimingSense]['timing_type'].keys())))
+
                     self.timingTabTimingTypeCombo.addItems(pinTimingTimingTypeList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1684,6 +1748,7 @@ class mainWindow(QMainWindow):
                     specifiedBundle = self.timingTabBundleCombo.currentText().strip()
                     specifiedBus = self.timingTabBusCombo.currentText().strip()
                     pinTimingWhenList = []
+
                     if specifiedBundle != '':
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinTimingWhenList = list(set(list(self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'][pinTimingTimingSense]['timing_type'][pinTimingTimingType]['when'].keys())))
@@ -1693,9 +1758,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinTimingWhenList = list(set(list(self.timingTabDic[libraryFileName][cellName]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'][pinTimingTimingSense]['timing_type'][pinTimingTimingType]['when'].keys())))
+
                     self.timingTabWhenCombo.addItems(pinTimingWhenList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1721,6 +1788,7 @@ class mainWindow(QMainWindow):
             for libraryFileName in self.timingTabDic.keys():
                 for cellName in self.timingTabDic[libraryFileName]:
                     pinTimingTableTypeList = []
+
                     if specifiedBundle != '':
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinTimingTableTypeList = list(set(list(self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'][pinTimingTimingSense]['timing_type'][pinTimingTimingType]['when'][pinTimingWhen]['table_type'].keys())))
@@ -1730,9 +1798,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinTimingTableTypeList = list(set(list(self.timingTabDic[libraryFileName][cellName]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'][pinTimingTimingSense]['timing_type'][pinTimingTimingType]['when'][pinTimingWhen]['table_type'].keys())))
+
                     self.timingTabTableTypeCombo.addItems(pinTimingTableTypeList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1761,6 +1831,7 @@ class mainWindow(QMainWindow):
                 for cellName in self.timingTabDic[libraryFileName]:
                     pinTimingIndex1List = []
                     pinTimingIndex2List = []
+
                     if specifiedBundle != '':
                         if 'timing' in self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinTimingIndex1List = list(set(list(self.timingTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'][pinTimingTimingSense]['timing_type'][pinTimingTimingType]['when'][pinTimingWhen]['table_type'][pinTimingTableType]['index_1'])))
@@ -1775,15 +1846,18 @@ class mainWindow(QMainWindow):
                             pinTimingIndex2List = list(set(list(self.timingTabDic[libraryFileName][cellName]['pin'][pinName]['timing']['related_pin'][pinTimingRelatedPin]['related_pg_pin'][pinTimingRelatedPgPin]['timing_sense'][pinTimingTimingSense]['timing_type'][pinTimingTimingType]['when'][pinTimingWhen]['table_type'][pinTimingTableType]['index_2'])))
 
                     self.timingTabIndex1Combo.addItem('')
+
                     for index1 in pinTimingIndex1List:
                         self.timingTabIndex1Combo.addItem(str(index1))
 
                     self.timingTabIndex2Combo.addItem('')
+
                     for index2 in pinTimingIndex2List:
                         self.timingTabIndex2Combo.addItem(str(index2))
 
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -1844,18 +1918,25 @@ class mainWindow(QMainWindow):
                             self.timingTabFigureYList = [float(i) for i in valuesList[int(pinTimingIndex1)]]
                         elif (pinTimingIndex1 == '') and (pinTimingIndex2 != ''):
                             self.timingTabFigureXList = [float(i) for i in index1List]
+
                             for valueList in valuesList:
                                 self.timingTabFigureYList.append(float(valueList[int(pinTimingIndex2)]))
                         elif (pinTimingIndex1 == '') and (pinTimingIndex2 == ''):
                             xList = []
+
                             for i in range(len(index1List)):
                                 tmpList = []
+
                                 for j in range(len(index2List)):
                                     tmpList.append(index1List[i])
+
                                 xList.append(tmpList)
+
                             yList = []
+
                             for i in range(len(index2List)):
                                 yList.append(index2List)
+
                             self.timingTabFigureXArray = numpy.array(xList, dtype='float64')
                             self.timingTabFigureYArray = numpy.array(yList, dtype='float64')
                             self.timingTabFigureZArray = numpy.array(valuesList, dtype='float64')
@@ -1870,7 +1951,7 @@ class mainWindow(QMainWindow):
                         self.timingTabTable.setRowCount(1)
                         self.timingTabTable.setColumnCount(len(index1List))
                         self.timingTabTable.setHorizontalHeaderLabels(index1List)
-  
+
                     for i in range(len(valuesList)):
                         for j in range(len(valuesList[i])):
                             self.timingTabTable.setItem(i, j, QTableWidgetItem(valuesList[i][j]))
@@ -1883,6 +1964,7 @@ class mainWindow(QMainWindow):
                 for libraryFileName in self.timingTabDic.keys():
                     for cellName in self.timingTabDic[libraryFileName]:
                         pinTimingDicList = []
+
                         if specifiedBundle != '':
                             if 'timing' in self.specifiedLibDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                                 pinTimingDicList = self.specifiedLibDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['timing']
@@ -1898,6 +1980,7 @@ class mainWindow(QMainWindow):
                                 if pinTimingIndex1 == '':
                                     self.timingTabIndex1Combo.setCurrentText('0')
                                     pinTimingIndex1 = 0
+
                                 if pinTimingIndex2 == '':
                                     self.timingTabIndex2Combo.setCurrentText('0')
                                     pinTimingIndex2 = 0
@@ -1905,10 +1988,12 @@ class mainWindow(QMainWindow):
                                 if pinTimingIndex1 != '':
                                     if pinTimingIndex2 != '':
                                         timingIndex1 = pinTimingDic['table_type'][pinTimingTableType]['index_1'][int(pinTimingIndex1)]
+
                                         if len(pinTimingDic['table_type'][pinTimingTableType]['index_2']) > 0:
                                             timingIndex2 = pinTimingDic['table_type'][pinTimingTableType]['index_2'][int(pinTimingIndex2)]
                                         else:
                                             timingIndex2 = ''
+
                                         timingValue = pinTimingDic['table_type'][pinTimingTableType]['values'][int(pinTimingIndex1)][int(pinTimingIndex2)]
                                     else:
                                         timingIndex1 = pinTimingDic['table_type'][pinTimingTableType]['index_1'][int(pinTimingIndex1)]
@@ -1937,6 +2022,7 @@ class mainWindow(QMainWindow):
         if self.specifiedCellCount == 1:
             pinTimingIndex1 = self.timingTabIndex1Combo.currentText().strip()
             pinTimingIndex2 = self.timingTabIndex2Combo.currentText().strip()
+
             if (pinTimingIndex1 == '') and (pinTimingIndex2 == ''):
                 if (len(self.timingTabFigureXArray) > 0) and (len(self.timingTabFigureYArray) > 0) and (len(self.timingTabFigureZArray) > 0):
                     self.timingTabFigure.draw3DPlot(self.timingTabFigureXArray, self.timingTabFigureYArray, self.timingTabFigureZArray, xLabel='index_1', yLabel='index_2', zLabel='values', title='Cell Timing Curve')
@@ -1949,10 +2035,9 @@ class mainWindow(QMainWindow):
         elif self.timingTabMultiEnable:
             if (len(self.timingTabFigureXList) > 0) and (len(self.timingTabFigureYList) > 0):
                 self.timingTabFigure.drawPlot(self.timingTabFigureXList, self.timingTabFigureYList, xLabel='Cell-Num', yLabel='Timing (' + str(self.timingUnit) + ')', yUnit=self.timingUnit, title='Cell Timing Curve')
-#### Update Timing Tab (end) ####
+# Update Timing Tab (end) #
 
-
-#### Update Internal Power Tab (begin) ####
+# Update Internal Power Tab (begin) #
     def updateInternalPowerTab(self):
         """
         Update internalPower tab.
@@ -1982,6 +2067,7 @@ class mainWindow(QMainWindow):
                         self.internalPowerTabBundleCombo.addItems(cellBundleList)
                         finish = True
                         break
+
                 if finish:
                     break
 
@@ -2000,6 +2086,7 @@ class mainWindow(QMainWindow):
                         self.internalPowerTabBusCombo.addItems(cellBusList)
                         finish = True
                         break
+
                 if finish:
                     break
 
@@ -2021,6 +2108,7 @@ class mainWindow(QMainWindow):
                 for cellName in self.internalPowerTabDic[libraryFileName]:
                     specifiedBundle = self.internalPowerTabBundleCombo.currentText().strip()
                     specifiedBus = self.internalPowerTabBusCombo.currentText().strip()
+
                     if specifiedBundle != '':
                         pinList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'].keys())))
                     elif specifiedBus != '':
@@ -2030,9 +2118,11 @@ class mainWindow(QMainWindow):
                             pinList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['pin'].keys())))
                         else:
                             pinList = []
+
                     self.internalPowerTabPinCombo.addItems(pinList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -2052,6 +2142,7 @@ class mainWindow(QMainWindow):
                     specifiedBundle = self.internalPowerTabBundleCombo.currentText().strip()
                     specifiedBus = self.internalPowerTabBusCombo.currentText().strip()
                     pinInternalPowerRelatedPinList = []
+
                     if specifiedBundle != '':
                         if 'internal_power' in self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinInternalPowerRelatedPinList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['internal_power']['related_pin'].keys())))
@@ -2061,9 +2152,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'internal_power' in self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinInternalPowerRelatedPinList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName]['internal_power']['related_pin'].keys())))
+
                     self.internalPowerTabRelatedPinCombo.addItems(pinInternalPowerRelatedPinList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -2084,6 +2177,7 @@ class mainWindow(QMainWindow):
                     specifiedBundle = self.internalPowerTabBundleCombo.currentText().strip()
                     specifiedBus = self.internalPowerTabBusCombo.currentText().strip()
                     pinInternalPowerRelatedPgPinList = []
+
                     if specifiedBundle != '':
                         if 'internal_power' in self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinInternalPowerRelatedPgPinList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['internal_power']['related_pin'][pinInternalPowerRelatedPin]['related_pg_pin'].keys())))
@@ -2093,9 +2187,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'internal_power' in self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinInternalPowerRelatedPgPinList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName]['internal_power']['related_pin'][pinInternalPowerRelatedPin]['related_pg_pin'].keys())))
+
                     self.internalPowerTabRelatedPgPinCombo.addItems(pinInternalPowerRelatedPgPinList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -2117,6 +2213,7 @@ class mainWindow(QMainWindow):
                     specifiedBundle = self.internalPowerTabBundleCombo.currentText().strip()
                     specifiedBus = self.internalPowerTabBusCombo.currentText().strip()
                     pinInternalPowerWhenList = []
+
                     if specifiedBundle != '':
                         if 'internal_power' in self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinInternalPowerWhenList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['internal_power']['related_pin'][pinInternalPowerRelatedPin]['related_pg_pin'][pinInternalPowerRelatedPgPin]['when'].keys())))
@@ -2126,9 +2223,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'internal_power' in self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinInternalPowerWhenList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName]['internal_power']['related_pin'][pinInternalPowerRelatedPin]['related_pg_pin'][pinInternalPowerRelatedPgPin]['when'].keys())))
+
                     self.internalPowerTabWhenCombo.addItems(pinInternalPowerWhenList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -2152,6 +2251,7 @@ class mainWindow(QMainWindow):
             for libraryFileName in self.internalPowerTabDic.keys():
                 for cellName in self.internalPowerTabDic[libraryFileName]:
                     pinInternalPowerTableTypeList = []
+
                     if specifiedBundle != '':
                         if 'internal_power' in self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinInternalPowerTableTypeList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['internal_power']['related_pin'][pinInternalPowerRelatedPin]['related_pg_pin'][pinInternalPowerRelatedPgPin]['when'][pinInternalPowerWhen]['table_type'].keys())))
@@ -2161,9 +2261,11 @@ class mainWindow(QMainWindow):
                     else:
                         if 'internal_power' in self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName]:
                             pinInternalPowerTableTypeList = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName]['internal_power']['related_pin'][pinInternalPowerRelatedPin]['related_pg_pin'][pinInternalPowerRelatedPgPin]['when'][pinInternalPowerWhen]['table_type'].keys())))
+
                     self.internalPowerTabTableTypeCombo.addItems(pinInternalPowerTableTypeList)
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -2190,6 +2292,7 @@ class mainWindow(QMainWindow):
                 for cellName in self.internalPowerTabDic[libraryFileName]:
                     pinInternalPowerIndex1List = []
                     pinInternalPowerIndex2List = []
+
                     if specifiedBundle != '':
                         if 'internal_power' in self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                             pinInternalPowerIndex1List = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['internal_power']['related_pin'][pinInternalPowerRelatedPin]['related_pg_pin'][pinInternalPowerRelatedPgPin]['when'][pinInternalPowerWhen]['table_type'][pinInternalPowerTableType]['index_1'])))
@@ -2204,15 +2307,18 @@ class mainWindow(QMainWindow):
                             pinInternalPowerIndex2List = list(set(list(self.internalPowerTabDic[libraryFileName][cellName]['pin'][pinName]['internal_power']['related_pin'][pinInternalPowerRelatedPin]['related_pg_pin'][pinInternalPowerRelatedPgPin]['when'][pinInternalPowerWhen]['table_type'][pinInternalPowerTableType]['index_2'])))
 
                     self.internalPowerTabIndex1Combo.addItem('')
+
                     for index1 in pinInternalPowerIndex1List:
                         self.internalPowerTabIndex1Combo.addItem(str(index1))
 
                     self.internalPowerTabIndex2Combo.addItem('')
+
                     for index2 in pinInternalPowerIndex2List:
                         self.internalPowerTabIndex2Combo.addItem(str(index2))
 
                     finish = True
                     break
+
                 if finish:
                     break
 
@@ -2275,14 +2381,20 @@ class mainWindow(QMainWindow):
                                 self.internalPowerTabFigureYList.append(float(valueList[int(pinInternalPowerIndex2)]))
                         elif (pinInternalPowerIndex1 == '') and (pinInternalPowerIndex2 == ''):
                             xList = []
+
                             for i in range(len(index1List)):
                                 tmpList = []
+
                                 for j in range(len(index2List)):
                                     tmpList.append(index1List[i])
+
                                 xList.append(tmpList)
+
                             yList = []
+
                             for i in range(len(index2List)):
                                 yList.append(index2List)
+
                             self.internalPowerTabFigureXArray = numpy.array(xList, dtype='float64')
                             self.internalPowerTabFigureYArray = numpy.array(yList, dtype='float64')
                             self.internalPowerTabFigureZArray = numpy.array(valuesList, dtype='float64')
@@ -2310,6 +2422,7 @@ class mainWindow(QMainWindow):
                 for libraryFileName in self.internalPowerTabDic.keys():
                     for cellName in self.internalPowerTabDic[libraryFileName]:
                         pinInternalPowerDicList = []
+
                         if specifiedBundle != '':
                             if 'internal_power' in self.specifiedLibDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]:
                                 pinInternalPowerDicList = self.specifiedLibDic[libraryFileName][cellName]['bundle'][specifiedBundle]['pin'][pinName]['internal_power']
@@ -2325,6 +2438,7 @@ class mainWindow(QMainWindow):
                                 if pinInternalPowerIndex1 == '':
                                     self.internalPowerTabIndex1Combo.setCurrentText('0')
                                     pinInternalPowerIndex1 = 0
+
                                 if pinInternalPowerIndex2 == '':
                                     self.internalPowerTabIndex2Combo.setCurrentText('0')
                                     pinInternalPowerIndex2 = 0
@@ -2332,6 +2446,7 @@ class mainWindow(QMainWindow):
                                 if pinInternalPowerIndex1 != '':
                                     if pinInternalPowerIndex2 != '':
                                         internalPowerIndex1 = pinInternalPowerDic['table_type'][pinInternalPowerTableType]['index_1'][int(pinInternalPowerIndex1)]
+
                                         if len(pinInternalPowerDic['table_type'][pinInternalPowerTableType]['index_2']) > 0:
                                             internalPowerIndex2 = pinInternalPowerDic['table_type'][pinInternalPowerTableType]['index_2'][int(pinInternalPowerIndex2)]
                                         else:
@@ -2364,6 +2479,7 @@ class mainWindow(QMainWindow):
         if self.specifiedCellCount == 1:
             pinInternalPowerIndex1 = self.internalPowerTabIndex1Combo.currentText().strip()
             pinInternalPowerIndex2 = self.internalPowerTabIndex2Combo.currentText().strip()
+
             if (pinInternalPowerIndex1 == '') and (pinInternalPowerIndex2 == ''):
                 if (len(self.internalPowerTabFigureXArray) > 0) and (len(self.internalPowerTabFigureYArray) > 0) and (len(self.internalPowerTabFigureZArray) > 0):
                     self.internalPowerTabFigure.draw3DPlot(self.internalPowerTabFigureXArray, self.internalPowerTabFigureYArray, self.internalPowerTabFigureZArray, xLabel='index_1', yLabel='index_2', zLabel='values', title='Cell Internal Power Curve')
@@ -2376,7 +2492,7 @@ class mainWindow(QMainWindow):
         elif self.internalPowerTabMultiEnable:
             if (len(self.internalPowerTabFigureXList) > 0) and (len(self.internalPowerTabFigureYList) > 0):
                 self.internalPowerTabFigure.drawPlot(self.internalPowerTabFigureXList, self.internalPowerTabFigureYList, xLabel='Cell-Num', yLabel='Internal-Power (' + str(self.internalPowerUnit) + ')', yUnit=self.internalPowerUnit, title='Cell Internal Power Curve')
-#### Update Internal Power Tab (end) ####
+# Update Internal Power Tab (end) #
 
 
 ################
@@ -2388,6 +2504,7 @@ def main():
     mw = mainWindow(inputFileList)
     mw.show()
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()
